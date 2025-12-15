@@ -9,14 +9,17 @@ import com.nergal.hello.entities.User;
 import com.nergal.hello.repositories.RoleRepository;
 import com.nergal.hello.repositories.UserRepository;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
@@ -54,6 +57,13 @@ public class UserController {
         userRepository.save(user);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users")
+    @PreAuthorize("hasAuthority('SCOPE_admin')")
+    public ResponseEntity<List<User>> listUsers() {
+        var users = userRepository.findAll();
+        return ResponseEntity.ok(users);
     }
     
 }

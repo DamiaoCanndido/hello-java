@@ -1,6 +1,7 @@
 package com.nergal.hello.controllers;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nergal.hello.controllers.dto.LoginRequest;
 import com.nergal.hello.controllers.dto.LoginResponse;
+import com.nergal.hello.entities.Role;
 import com.nergal.hello.repositories.UserRepository;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,10 +46,16 @@ public class TokenController {
         var now = Instant.now();
         var expiresIn = 300L;
 
+        var scopes = user.get().getRoles()
+            .stream()
+            .map(Role::getName)
+            .collect(Collectors.joining(" "));
+
         var claims = JwtClaimsSet.builder()
             .issuer("nergal.com")
             .subject(user.get().getUserId().toString())
             .expiresAt(now.plusSeconds(expiresIn))
+            .claim("scope", scopes)
             .issuedAt(now)
             .build();
 
