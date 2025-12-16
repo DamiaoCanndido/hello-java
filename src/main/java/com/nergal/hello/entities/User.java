@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nergal.hello.controllers.dto.LoginRequest;
 
-import jakarta.persistence.Column;
 // javax not found
 import jakarta.persistence.*;
 
@@ -23,6 +23,7 @@ public class User {
     @Column(unique = true)
     private String username;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

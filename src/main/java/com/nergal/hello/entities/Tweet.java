@@ -1,6 +1,6 @@
 package com.nergal.hello.entities;
 
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +26,7 @@ public class Tweet {
 
     private String content;
 
-    @CreatedDate
+    @CreationTimestamp
     private String creationTimestamp;
 
     public Long getTweetId() {
