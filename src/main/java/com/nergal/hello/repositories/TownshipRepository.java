@@ -13,7 +13,7 @@ public interface TownshipRepository extends JpaRepository<Township, UUID>{
 
     Optional<Township> findByName(String name);
 
-    Optional<Township> findByTownshipId(String id);
+    Optional<Township> findByTownshipId(UUID townshipId);
 
 }
 

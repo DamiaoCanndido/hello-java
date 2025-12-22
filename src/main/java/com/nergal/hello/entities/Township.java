@@ -26,4 +26,36 @@ public class Township {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    public UUID getTownshipId() {
+        return townshipId;
+    }
+
+    public void setTownshipId(UUID townshipId) {
+        this.townshipId = townshipId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }
