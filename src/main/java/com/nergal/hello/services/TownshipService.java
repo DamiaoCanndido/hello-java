@@ -1,7 +1,5 @@
 package com.nergal.hello.services;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +17,7 @@ public class TownshipService {
     }
 
     @Transactional
-    public void createTownship(TownshipRequestDTO dto, UUID townshipId){
+    public void createTownship(TownshipRequestDTO dto){
         var township = new Township();
         township.setName(dto.name());
         township.setUf(dto.uf());

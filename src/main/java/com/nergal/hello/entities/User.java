@@ -85,6 +85,14 @@ public class User {
         this.roles = roles;
     }
 
+    public Township getTownship() {
+        return township;
+    }
+
+    public void setTownship(Township township) {
+        this.township = township;
+    }
+
     public String getCreatedAt() {
         return createdAt;
     }

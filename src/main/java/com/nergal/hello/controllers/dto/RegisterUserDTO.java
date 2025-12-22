@@ -1,5 +1,7 @@
 package com.nergal.hello.controllers.dto;
 
+import java.util.UUID;
+
 import com.nergal.hello.controllers.validators.PasswordMatches;
 
 import jakarta.validation.constraints.Email;
@@ -19,5 +21,7 @@ public record RegisterUserDTO(
     String password,
 
     @NotBlank(message = "Confirm password is required")
-    String confirmPassword
+    String confirmPassword,
+
+    UUID townshipId
 ) {}

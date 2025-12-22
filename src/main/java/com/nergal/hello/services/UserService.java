@@ -18,8 +18,10 @@ import com.nergal.hello.controllers.dto.LoginRequest;
 import com.nergal.hello.controllers.dto.LoginResponse;
 import com.nergal.hello.controllers.dto.RegisterUserDTO;
 import com.nergal.hello.entities.Role;
+import com.nergal.hello.entities.Township;
 import com.nergal.hello.entities.User;
 import com.nergal.hello.repositories.RoleRepository;
+import com.nergal.hello.repositories.TownshipRepository;
 import com.nergal.hello.repositories.UserRepository;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -29,17 +31,20 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final TownshipRepository townshipRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtEncoder jwtEncoder;
 
     public UserService(
             UserRepository userRepository,
             RoleRepository roleRepository,
+            TownshipRepository townshipRepository,
             BCryptPasswordEncoder passwordEncoder,
             JwtEncoder jwtEncoder) {
 
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.townshipRepository = townshipRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtEncoder = jwtEncoder;
     }
@@ -57,11 +62,18 @@ public class UserService {
 
         var basicRole = roleRepository.findByName(Role.Values.basic.name());
 
+        Township township = null;
+
+        if (dto.townshipId() != null) {
+            township = townshipRepository.findByTownshipId(dto.townshipId()).get();    
+        }
+
         var user = new User();
         user.setUsername(dto.username());
         user.setEmail(dto.email());
         user.setPassword(passwordEncoder.encode(dto.password()));
         user.setRoles(Set.of(basicRole));
+        user.setTownship(township);
 
         userRepository.save(user);
     }
