@@ -38,6 +38,10 @@ public class User {
     )
     private Set<Role> roles;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "township_id")
+    private Township township;
+
     @CreationTimestamp
     private String createdAt;
 
