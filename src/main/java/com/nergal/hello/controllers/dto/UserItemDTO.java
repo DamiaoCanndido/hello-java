@@ -8,5 +8,6 @@ public record UserItemDTO(
     String username, 
     String email,
     List<RoleItemDTO> roles, 
+    TownshipItemDTO township,
     String createdAt
 ) { }

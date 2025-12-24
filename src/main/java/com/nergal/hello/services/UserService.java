@@ -19,6 +19,7 @@ import com.nergal.hello.controllers.dto.LoginRequest;
 import com.nergal.hello.controllers.dto.LoginResponse;
 import com.nergal.hello.controllers.dto.RegisterUserDTO;
 import com.nergal.hello.controllers.dto.RoleItemDTO;
+import com.nergal.hello.controllers.dto.TownshipItemDTO;
 import com.nergal.hello.controllers.dto.UserDTO;
 import com.nergal.hello.controllers.dto.UserItemDTO;
 import com.nergal.hello.entities.Role;
@@ -126,6 +127,12 @@ public class UserService {
                             role.getName()
                         ))
                         .collect(Collectors.toList()),
+                    user.getTownship() != null ? new TownshipItemDTO(
+                        user.getTownship().getTownshipId(),
+                        user.getTownship().getName(),
+                        user.getTownship().getUf(),
+                        user.getTownship().getImageUrl()
+                    ) : null,
                     user.getCreatedAt()
                 ));
         return new UserDTO(users.collect(Collectors.toList()));
