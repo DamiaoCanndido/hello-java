@@ -29,6 +29,7 @@ import com.nergal.hello.entities.Township;
 import com.nergal.hello.entities.User;
 import com.nergal.hello.exception.NotFoundException;
 import com.nergal.hello.exception.UnprocessableContentException;
+import com.nergal.hello.repositories.PermissionRepository;
 import com.nergal.hello.repositories.RoleRepository;
 import com.nergal.hello.repositories.TownshipRepository;
 import com.nergal.hello.repositories.UserRepository;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+    private final PermissionRepository permissionRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final TownshipRepository townshipRepository;
@@ -48,12 +50,14 @@ public class UserService {
             UserRepository userRepository,
             RoleRepository roleRepository,
             TownshipRepository townshipRepository,
+            PermissionRepository permissionRepository,
             BCryptPasswordEncoder passwordEncoder,
             JwtEncoder jwtEncoder) {
 
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.townshipRepository = townshipRepository;
+        this.permissionRepository = permissionRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtEncoder = jwtEncoder;
     }
@@ -92,13 +96,19 @@ public class UserService {
             throw new BadCredentialsException("user or password invalid");
         }
 
+        var permissionsByUser = permissionRepository.findPermissionNamesByUsername(user.get().getUsername());
+
         var now = Instant.now();
         var expiresIn = 300L;
 
-        var scopes = user.get().getRoles()
+        var role = user.get().getRoles()
             .stream()
             .map(Role::getName)
             .collect(Collectors.joining(" "));
+        
+        
+        var scopes = String.join(" ", role, String.join(" ", permissionsByUser));
+
 
         var claims = JwtClaimsSet.builder()
             .issuer("nergal.com")
