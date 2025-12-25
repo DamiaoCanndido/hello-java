@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    // 404 Not Found
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFound(NotFoundException ex) {
         return ResponseEntity
@@ -38,6 +39,17 @@ public class GlobalExceptionHandler {
             }});
     }
 
+    // 409 Conflict
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, String>> handleConflict(ConflictException ex) {
+        return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .body(new HashMap<>() {{
+                put("error", ex.getMessage());
+            }});
+    }
+
+    // 422 Unprocessable Content
     @ExceptionHandler(UnprocessableContentException.class)
     public ResponseEntity<Map<String, String>> handleUnprocessableContent(UnprocessableContentException ex) {
         return ResponseEntity
