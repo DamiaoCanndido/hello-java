@@ -30,7 +30,24 @@ public abstract class DocumentService<T extends Document> {
             JwtAuthenticationToken token,
             Supplier<T> factory
     ) {
-        var user = userRepository.findById(UUID.fromString(token.getName()));;
+        var user = userRepository.findById(UUID.fromString(token.getName()));
+
+        int lastNoticeOrderByTownship = 0;
+
+        var noticeList = repository.findByTownship_TownshipIdOrderByOrderDesc(
+            user.get().getTownship().getTownshipId());
+
+        if (!noticeList.isEmpty()) {
+            lastNoticeOrderByTownship = noticeList.get(0).getOrder();
+        }
+
+        if (dto.order() == null) {
+            dto = new DocumentRequestDTO(
+                    lastNoticeOrderByTownship + 1,
+                    dto.description(),
+                    dto.townshipId()
+            );
+        }
 
         var document = factory.get();
         document.setCreatedBy(user.get());

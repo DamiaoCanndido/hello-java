@@ -12,6 +12,7 @@ import com.nergal.docseq.entities.Document;
 public interface DocumentRepository<T extends Document>
         extends JpaRepository<T, UUID> {
 
-    List<T> findByTownshipTownshipId(UUID townshipId);
+    // Find documents by township ID ordered by 'order' field in descending order
+    List<T> findByTownship_TownshipIdOrderByOrderDesc(UUID townshipId);
 }
 

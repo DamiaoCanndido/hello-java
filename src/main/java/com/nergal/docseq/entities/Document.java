@@ -21,7 +21,7 @@ public abstract class Document {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, name = "doc_order")
+    @Column(unique = true, nullable = false, name = "doc_order")
     private Integer order;
 
     @Column(nullable = false, length = 500)

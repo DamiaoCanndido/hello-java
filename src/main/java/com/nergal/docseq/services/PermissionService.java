@@ -2,7 +2,6 @@ package com.nergal.docseq.services;
 
 import java.util.UUID;
 
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +23,11 @@ public class PermissionService {
     }
 
     @Transactional
-    public void createPermission(PermissionRequestDTO dto, JwtAuthenticationToken token){
-        var user = userRepository.findById(UUID.fromString(token.getName()));
+    public void createPermission(PermissionRequestDTO dto){
+        var user = userRepository.findById(UUID.fromString(dto.userId()));
         var permission = new UserPermission();
 
-        var exists = permissionRepository.existsByNameAndUser_UserId(dto.name(), UUID.fromString(token.getName()));
+        var exists = permissionRepository.existsByNameAndUser_UserId(dto.name(), UUID.fromString(dto.userId()));
 
         if (exists) {
             throw new ConflictException("permission already exists for user");
