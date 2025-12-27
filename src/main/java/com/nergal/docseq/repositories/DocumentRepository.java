@@ -14,5 +14,7 @@ public interface DocumentRepository<T extends Document>
 
     // Find documents by township ID ordered by 'order' field in descending order
     List<T> findByTownship_TownshipIdOrderByOrderDesc(UUID townshipId);
+
+    T findByOrder(Integer order);
 }
 

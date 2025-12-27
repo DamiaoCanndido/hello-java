@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nergal.docseq.controllers.dto.DocumentRequestDTO;
 import com.nergal.docseq.entities.Document;
+import com.nergal.docseq.exception.ConflictException;
 import com.nergal.docseq.repositories.DocumentRepository;
 import com.nergal.docseq.repositories.UserRepository;
 
@@ -31,6 +32,13 @@ public abstract class DocumentService<T extends Document> {
             Supplier<T> factory
     ) {
         var user = userRepository.findById(UUID.fromString(token.getName()));
+        var documentAlreadyExists = repository.findByOrder(dto.order());
+
+        if (documentAlreadyExists != null) {
+            throw new ConflictException(
+                "Document with order " + dto.order() + " already exists."
+            );
+        }
 
         int lastNoticeOrderByTownship = 0;
 
