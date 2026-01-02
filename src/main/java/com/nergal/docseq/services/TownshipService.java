@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nergal.docseq.controllers.dto.TownshipDTO;
 import com.nergal.docseq.controllers.dto.TownshipItemDTO;
 import com.nergal.docseq.controllers.dto.TownshipRequestDTO;
+import com.nergal.docseq.controllers.dto.UpdateTownshipDTO;
 import com.nergal.docseq.entities.Township;
 import com.nergal.docseq.exception.NotFoundException;
 import com.nergal.docseq.repositories.TownshipRepository;
@@ -53,6 +54,27 @@ public class TownshipService {
         township.setName(dto.name());
         township.setUf(dto.uf());
         township.setImageUrl(dto.imageUrl());
+        townshipRepo.save(township);
+    }
+
+    protected void applyUpdates(UpdateTownshipDTO dto, Township township) {
+        if (dto.name() != null) {
+            township.setName(dto.name());
+        }
+        if (dto.uf() != null) {
+            township.setUf(dto.uf());
+        }
+        if (dto.imageUrl() != null) {
+            township.setImageUrl(dto.imageUrl());
+        }
+    }
+
+    @Transactional
+    public void updateTownship(UUID townshipId, UpdateTownshipDTO dto){
+        var township = townshipRepo.findById(townshipId)
+            .orElseThrow(() -> new NotFoundException("Township not found"));
+        
+        applyUpdates(dto, township);
         townshipRepo.save(township);
     }
 

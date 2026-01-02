@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nergal.docseq.controllers.dto.TownshipDTO;
 import com.nergal.docseq.controllers.dto.TownshipRequestDTO;
+import com.nergal.docseq.controllers.dto.UpdateTownshipDTO;
 import com.nergal.docseq.services.TownshipService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,8 +43,15 @@ public class TownshipController {
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('SCOPE_admin')")
-    public ResponseEntity<Void> createTown(@RequestBody TownshipRequestDTO dto) {
+    public ResponseEntity<Void> createTown(@Valid @RequestBody TownshipRequestDTO dto) {
         townshipService.createTownship(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_admin')")
+    public ResponseEntity<Void> updateTown(@PathVariable UUID id, @Valid @RequestBody UpdateTownshipDTO dto) {
+        townshipService.updateTownship(id, dto);
         return ResponseEntity.ok().build();
     }
 
