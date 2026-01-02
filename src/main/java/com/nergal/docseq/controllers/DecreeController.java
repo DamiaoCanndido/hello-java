@@ -40,7 +40,7 @@ public class DecreeController {
     @PreAuthorize("hasAuthority('SCOPE_DECREE_UPDATE')")
     public ResponseEntity<Void> update(
             @PathVariable UUID id,
-            @RequestBody UpdateDocumentDTO dto
+            @Valid @RequestBody UpdateDocumentDTO dto
     ) {
         decreeService.update(id, dto);
         return ResponseEntity.ok().build();

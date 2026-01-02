@@ -22,6 +22,7 @@ import com.nergal.docseq.controllers.dto.LoginResponse;
 import com.nergal.docseq.controllers.dto.RegisterUserDTO;
 import com.nergal.docseq.controllers.dto.RoleItemDTO;
 import com.nergal.docseq.controllers.dto.TownshipItemDTO;
+import com.nergal.docseq.controllers.dto.UpdateUserDTO;
 import com.nergal.docseq.controllers.dto.UserDTO;
 import com.nergal.docseq.controllers.dto.UserItemDTO;
 import com.nergal.docseq.entities.Role;
@@ -153,6 +154,40 @@ public class UserService {
             users.getTotalPages(),
             users.getTotalElements()
         );
+    }
+
+    protected void applyUpdates(User entity, UpdateUserDTO dto) {
+        if (dto.username() != null) {
+            entity.setUsername(dto.username());
+        }
+        if (dto.email() != null) {
+            entity.setEmail(dto.email());
+        }
+        if (dto.role() != null) {
+            var role = roleRepository.findByName(dto.role());
+            if (role == null) {
+                throw new NotFoundException("Role not found");
+            }
+            entity.setRoles(Set.of(role));
+        }
+        if (dto.password() != null && !dto.password().isEmpty()) {
+            entity.setPassword(passwordEncoder.encode(dto.password()));
+        }
+        if (dto.townshipId() != null) {
+            var township = townshipRepository.findByTownshipId(dto.townshipId())
+                .orElseThrow(() -> new NotFoundException("Township not found"));
+            entity.setTownship(township);
+        }
+    }
+
+    @Transactional
+    public void updateUser(UUID userId, UpdateUserDTO dto){
+        var user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException("User not found"));
+
+        applyUpdates(user, dto);
+
+        userRepository.save(user);
     }
 
     @Transactional

@@ -1,19 +1,29 @@
 package com.nergal.docseq.controllers.validators;
 
-import com.nergal.docseq.controllers.dto.RegisterUserDTO;
+import com.nergal.docseq.controllers.dto.PasswordConfirmable;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class PasswordMatchesValidator
-        implements ConstraintValidator<PasswordMatches, RegisterUserDTO> {
+        implements ConstraintValidator<PasswordMatches, PasswordConfirmable> {
 
     @Override
-    public boolean isValid(RegisterUserDTO dto, ConstraintValidatorContext context) {
-        if (dto.password() == null || dto.confirmPassword() == null) {
+    public boolean isValid(PasswordConfirmable value, ConstraintValidatorContext context) {
+        if (value == null) return true;
+
+        String password = value.password();
+        String confirmPassword = value.confirmPassword();
+
+        if (password == null && confirmPassword == null) {
+            return true;
+        }
+
+        if (password == null || confirmPassword == null) {
             return false;
         }
-        return dto.password().equals(dto.confirmPassword());
+
+        return password.equals(confirmPassword);
     }
 }
 

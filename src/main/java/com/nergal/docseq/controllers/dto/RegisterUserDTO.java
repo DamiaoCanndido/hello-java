@@ -24,4 +24,4 @@ public record RegisterUserDTO(
     String confirmPassword,
 
     UUID townshipId
-) {}
+) implements PasswordConfirmable {}

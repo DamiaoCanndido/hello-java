@@ -51,6 +51,7 @@ public class NoticeController {
     @PreAuthorize("hasAuthority('SCOPE_NOTICE_UPDATE')")
     public ResponseEntity<Void> update(
             @PathVariable UUID id,
+            @Valid
             @RequestBody UpdateDocumentDTO dto
     ) {
         noticeService.update(id, dto);
