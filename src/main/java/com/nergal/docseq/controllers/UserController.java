@@ -41,8 +41,8 @@ public class UserController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('SCOPE_admin')")
-    public ResponseEntity<UserDTO> listUsers(@RequestParam(value = "page", defaultValue = "0") int page,
-                                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    public ResponseEntity<UserDTO> listUsers(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "10") int pageSize) {
         return ResponseEntity.ok(userService.listUsers(page, pageSize));
     }
 

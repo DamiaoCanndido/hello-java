@@ -24,8 +24,8 @@ public class TweetController {
     }
 
     @GetMapping("/feed")
-    public ResponseEntity<FeedDTO> getFeed(@RequestParam(value = "page", defaultValue = "0") int page,
-                                           @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+    public ResponseEntity<FeedDTO> getFeed(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "10") int pageSize) {
         return ResponseEntity.ok(tweetService.getFeed(page, pageSize));
     }
     
