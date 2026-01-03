@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.nergal.docseq.controllers.dto.TownshipDTO;
 import com.nergal.docseq.controllers.dto.TownshipItemDTO;
@@ -26,8 +27,8 @@ public class TownshipService {
     }
 
     @Transactional(readOnly = true)
-    public TownshipDTO getAllTownships(int page, int size) {
-        var pageable = PageRequest.of(page, size, Sort.Direction.ASC, "name");
+    public TownshipDTO getAllTownships(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int pageSize) {
+        var pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
         var townshipPage = townshipRepo.findAll(pageable);
 
         var townshipItems = townshipPage.getContent().stream()

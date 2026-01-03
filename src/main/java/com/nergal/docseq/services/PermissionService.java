@@ -2,9 +2,13 @@ package com.nergal.docseq.services;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nergal.docseq.controllers.dto.PermissionDTO;
+import com.nergal.docseq.controllers.dto.PermissionItemDTO;
 import com.nergal.docseq.controllers.dto.PermissionRequestDTO;
 import com.nergal.docseq.entities.UserPermission;
 import com.nergal.docseq.exception.ConflictException;
@@ -21,6 +25,34 @@ public class PermissionService {
     public PermissionService(PermissionRepository permissionRepository, UserRepository userRepository) {
         this.permissionRepository = permissionRepository;
         this.userRepository = userRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public PermissionDTO getPermissionsByUserId(
+        int page,
+        int pageSize,
+        UUID userId
+    ){
+        var pageble = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
+        var permissions = permissionRepository.findByUser_UserId(userId, pageble);
+        if (permissions.isEmpty()) {
+            throw new NotFoundException("no permissions found for user");
+        }
+
+        var permissionItem = permissions.stream()
+            .map(permission -> new PermissionItemDTO(
+                permission.getPermissionId(),
+                permission.getName()
+            ))
+            .toList();
+
+        return new PermissionDTO(
+            permissionItem,
+            page,
+            pageSize,
+            permissions.getTotalPages(),
+            permissions.getTotalElements()
+        );
     }
 
     @Transactional

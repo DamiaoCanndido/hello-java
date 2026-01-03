@@ -7,6 +7,8 @@ import com.nergal.docseq.entities.UserPermission;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,8 @@ public interface PermissionRepository extends JpaRepository<UserPermission, Long
         where up.user.username = :username
     """)
     List<String> findPermissionNamesByUsername(@Param("username") String username);
+
+    Page<UserPermission> findByUser_UserId(UUID userId, Pageable pageable);
 
     boolean existsByNameAndUser_UserId(String name, UUID userId);
 }
