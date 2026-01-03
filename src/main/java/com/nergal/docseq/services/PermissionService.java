@@ -74,5 +74,16 @@ public class PermissionService {
         permission.setUser(user.get());
         permissionRepository.save(permission);
     }
+
+    @Transactional
+    public void deletePermission(UUID userId, String permissionName){
+        var user = userRepository.findById(userId);
+
+        if (user.isEmpty()) {
+            throw new NotFoundException("user not found");
+        }
+
+        permissionRepository.deleteByUser_UserIdAndName(userId, permissionName);
+    }
     
 }

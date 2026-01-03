@@ -25,4 +25,6 @@ public interface PermissionRepository extends JpaRepository<UserPermission, Long
     Page<UserPermission> findByUser_UserId(UUID userId, Pageable pageable);
 
     boolean existsByNameAndUser_UserId(String name, UUID userId);
+
+    void deleteByUser_UserIdAndName(UUID userId, String name);
 }

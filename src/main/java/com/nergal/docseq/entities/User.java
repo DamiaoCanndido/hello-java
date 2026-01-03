@@ -43,6 +43,13 @@ public class User {
     @JoinColumn(name = "township_id")
     private Township township;
 
+    @OneToMany(
+        mappedBy = "user",
+        cascade = CascadeType.REMOVE,
+        orphanRemoval = true
+    )
+    private Set<UserPermission> permissions;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

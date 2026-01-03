@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,16 @@ public class PermissionController {
     @PreAuthorize("hasAuthority('SCOPE_admin')")
     public ResponseEntity<Void> createPermission(@Valid @RequestBody PermissionRequestDTO dto) {
         permissionService.createPermission(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{userId}/permissions")
+    @PreAuthorize("hasAuthority('SCOPE_admin')")
+    public ResponseEntity<Void> deletePermission(
+            @PathVariable UUID userId,
+            @RequestParam String name
+    ) {
+        permissionService.deletePermission(userId, name);
         return ResponseEntity.ok().build();
     }
 }
