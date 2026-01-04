@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +55,25 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleUnprocessableContent(UnprocessableContentException ex) {
         return ResponseEntity
             .status(HttpStatus.UNPROCESSABLE_CONTENT)
+            .body(new HashMap<>() {{
+                put("error", ex.getMessage());
+            }});
+    }
+
+    // 422 Unprocessable Content
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Map<String, String>> handleBadRequest(BadRequestException ex) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(new HashMap<>() {{
+                put("error", ex.getMessage());
+            }});
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(new HashMap<>() {{
                 put("error", ex.getMessage());
             }});
