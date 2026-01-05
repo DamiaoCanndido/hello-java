@@ -1,5 +1,7 @@
 package com.nergal.docseq.controllers.dto;
 
-public record RoleItemDTO(Long roleId, String name) {
+import com.nergal.docseq.entities.Role;
+
+public record RoleItemDTO(Long roleId, Role.Values name) {
 
 }

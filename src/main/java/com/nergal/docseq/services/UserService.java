@@ -71,7 +71,7 @@ public class UserService {
             throw new UnprocessableContentException("user already exists");
         }
 
-        var basicRole = roleRepository.findByName(Role.Values.basic.name());
+        var basicRole = roleRepository.findByName(Role.Values.basic);
 
         Township township = null;
 
@@ -107,6 +107,7 @@ public class UserService {
         var role = user.get().getRoles()
             .stream()
             .map(Role::getName)
+            .map(Role.Values::name)
             .collect(Collectors.joining(" "));
         
         
@@ -198,7 +199,7 @@ public class UserService {
 
         var isAdmin = user.get().getRoles()
             .stream()
-            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.admin.name()));
+            .anyMatch(role -> role.getName().name().equalsIgnoreCase(Role.Values.admin.name()));
 
         var userToDelete = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException("User not found"));

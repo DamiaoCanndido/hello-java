@@ -63,7 +63,7 @@ public class TweetService {
 
         var isAdmin = user.get().getRoles()
             .stream()
-            .anyMatch(role -> role.getName().equalsIgnoreCase(Role.Values.admin.name()));
+            .anyMatch(role -> role.getName().name().equalsIgnoreCase(Role.Values.admin.name()));
 
         var tweet = tweetRepository.findById(tweetId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
