@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.nergal.docseq.controllers.dto.DocumentRequestDTO;
 import com.nergal.docseq.controllers.dto.UpdateDocumentDTO;
+import com.nergal.docseq.controllers.helpers.DateRange;
 import com.nergal.docseq.entities.Document;
 import com.nergal.docseq.exception.ConflictException;
 import com.nergal.docseq.exception.NotFoundException;
@@ -32,7 +33,10 @@ public abstract class DocumentService<T extends Document> {
     protected List<T> listDocumentsByTownship(JwtAuthenticationToken token) {
         var township_id = userRepository.findById(UUID.fromString(token.getName()))
             .get().getTownship().getTownshipId();
-        return repository.findByTownship_TownshipIdOrderByOrderDesc(township_id);
+            var dateRange = new DateRange();
+            var initialDateTime = dateRange.getInitialDateTime();
+            var endDateTime = dateRange.getEndDateTime();
+        return repository.findByTownship_TownshipIdAndCreatedAtBetweenOrderByOrderDesc(township_id, initialDateTime, endDateTime);
     }
 
     protected T createBase(
@@ -50,9 +54,12 @@ public abstract class DocumentService<T extends Document> {
         }
 
         int lastNoticeOrderByTownship = 0;
+        var dateRange = new DateRange();
+            var initialDateTime = dateRange.getInitialDateTime();
+            var endDateTime = dateRange.getEndDateTime();
 
-        var noticeList = repository.findByTownship_TownshipIdOrderByOrderDesc(
-            user.get().getTownship().getTownshipId());
+        var noticeList = repository.findByTownship_TownshipIdAndCreatedAtBetweenOrderByOrderDesc(
+            user.get().getTownship().getTownshipId(), initialDateTime, endDateTime);
 
         if (!noticeList.isEmpty()) {
             lastNoticeOrderByTownship = noticeList.get(0).getOrder();
@@ -60,9 +67,9 @@ public abstract class DocumentService<T extends Document> {
 
         if (dto.order() == null) {
             dto = new DocumentRequestDTO(
-                    lastNoticeOrderByTownship + 1,
-                    dto.description(),
-                    dto.townshipId()
+                lastNoticeOrderByTownship + 1,
+                dto.description(),
+                dto.townshipId()
             );
         }
 
