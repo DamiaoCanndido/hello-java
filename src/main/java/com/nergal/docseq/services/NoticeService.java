@@ -1,10 +1,9 @@
 package com.nergal.docseq.services;
 
-import java.util.List;
-
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import com.nergal.docseq.controllers.dto.DocumentDTO;
 import com.nergal.docseq.controllers.dto.DocumentRequestDTO;
 import com.nergal.docseq.entities.Notice;
 import com.nergal.docseq.repositories.NoticeRepository;
@@ -20,8 +19,8 @@ public class NoticeService extends DocumentService<Notice> {
         super(noticeRepository, userRepository);
     }
 
-    public List<Notice> listNoticesByTownship(JwtAuthenticationToken token) {
-        return listDocumentsByTownship(token);
+    public DocumentDTO listNoticesByTownship(int page, int pageSize, JwtAuthenticationToken token) {
+        return listDocumentsByTownship(page, pageSize, token);
     }
 
     public void createNotice(DocumentRequestDTO dto, JwtAuthenticationToken token) {

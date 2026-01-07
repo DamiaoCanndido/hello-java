@@ -34,8 +34,8 @@ public class PermissionService {
         int pageSize,
         UUID userId
     ){
-        var pageble = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
-        var permissions = permissionRepository.findByUser_UserId(userId, pageble);
+        var pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "name");
+        var permissions = permissionRepository.findByUser_UserId(userId, pageable);
         if (permissions.isEmpty()) {
             throw new NotFoundException("no permissions found for user");
         }

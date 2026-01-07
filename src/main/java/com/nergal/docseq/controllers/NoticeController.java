@@ -1,7 +1,5 @@
 package com.nergal.docseq.controllers;
 
-
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -14,11 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nergal.docseq.controllers.dto.DocumentDTO;
 import com.nergal.docseq.controllers.dto.DocumentRequestDTO;
 import com.nergal.docseq.controllers.dto.UpdateDocumentDTO;
-import com.nergal.docseq.entities.Notice;
 import com.nergal.docseq.services.NoticeService;
 
 import jakarta.validation.Valid;
@@ -36,8 +35,13 @@ public class NoticeController {
 
     @PreAuthorize("hasAuthority('SCOPE_NOTICE_READ')")
     @GetMapping("")
-    public ResponseEntity<List<Notice>> listNoticesByTownship(JwtAuthenticationToken token) {
-        return ResponseEntity.ok(noticeService.listNoticesByTownship(token));
+    public ResponseEntity<DocumentDTO> listNoticesByTownship(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int pageSize, 
+        JwtAuthenticationToken token) {
+
+        var notices = noticeService.listNoticesByTownship(page, pageSize, token);
+        return ResponseEntity.ok(notices);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_NOTICE_CREATE')")

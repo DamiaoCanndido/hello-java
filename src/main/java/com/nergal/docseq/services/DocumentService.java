@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nergal.docseq.controllers.dto.DocumentDTO;
+import com.nergal.docseq.controllers.dto.DocumentItemDTO;
 import com.nergal.docseq.controllers.dto.DocumentRequestDTO;
 import com.nergal.docseq.controllers.dto.UpdateDocumentDTO;
 import com.nergal.docseq.controllers.helpers.DateRange;
@@ -30,13 +34,41 @@ public abstract class DocumentService<T extends Document> {
         this.userRepository = userRepository;
     }
 
-    protected List<T> listDocumentsByTownship(JwtAuthenticationToken token) {
+    protected DocumentDTO listDocumentsByTownship(
+        int page,
+        int pageSize,
+        JwtAuthenticationToken token) {
+
+        var pageable = PageRequest.of(page, pageSize, Sort.Direction.DESC, "order");
         var township_id = userRepository.findById(UUID.fromString(token.getName()))
             .get().getTownship().getTownshipId();
             var dateRange = new DateRange();
             var initialDateTime = dateRange.getInitialDateTime();
             var endDateTime = dateRange.getEndDateTime();
-        return repository.findByTownship_TownshipIdAndCreatedAtBetweenOrderByOrderDesc(township_id, initialDateTime, endDateTime);
+            var documents = repository.findByTownship_TownshipIdAndCreatedAtBetweenOrderByOrderDesc(
+                township_id, 
+                initialDateTime, 
+                endDateTime, 
+                pageable
+            );
+            List<DocumentItemDTO> documentsItems = documents
+            .stream()
+            .map(doc -> 
+                new DocumentItemDTO(
+                    doc.getId(),
+                    doc.getDescription(),
+                    doc.getOrder(),
+                    doc.getCreatedAt()
+                )
+            ).toList();
+
+        return new DocumentDTO(
+            documentsItems, 
+            page, 
+            pageSize, 
+            documents.getTotalPages(), 
+            documents.getTotalElements()
+        );
     }
 
     protected T createBase(
@@ -44,8 +76,13 @@ public abstract class DocumentService<T extends Document> {
             JwtAuthenticationToken token,
             Supplier<T> factory
     ) {
+        var dateRange = new DateRange();
         var user = userRepository.findById(UUID.fromString(token.getName()));
-        var documentAlreadyExists = repository.findByOrder(dto.order());
+        var documentAlreadyExists = repository.findByOrderAndCreatedAtBetween(
+            dto.order(), 
+            dateRange.getInitialDateTime(), 
+            dateRange.getEndDateTime()
+        );
 
         if (documentAlreadyExists != null) {
             throw new ConflictException(
@@ -54,12 +91,13 @@ public abstract class DocumentService<T extends Document> {
         }
 
         int lastNoticeOrderByTownship = 0;
-        var dateRange = new DateRange();
+        
             var initialDateTime = dateRange.getInitialDateTime();
             var endDateTime = dateRange.getEndDateTime();
+        var pageable = PageRequest.of(0, 10, Sort.Direction.ASC, "order");
 
         var noticeList = repository.findByTownship_TownshipIdAndCreatedAtBetweenOrderByOrderDesc(
-            user.get().getTownship().getTownshipId(), initialDateTime, endDateTime);
+            user.get().getTownship().getTownshipId(), initialDateTime, endDateTime, pageable).getContent();
 
         if (!noticeList.isEmpty()) {
             lastNoticeOrderByTownship = noticeList.get(0).getOrder();
@@ -85,7 +123,12 @@ public abstract class DocumentService<T extends Document> {
     protected void applyUpdates(T entity, UpdateDocumentDTO dto) {
 
         if (dto.order() != null) {
-            var exists = repository.findByOrder(dto.order());
+            var dateRange = new DateRange();
+            var exists = repository.findByOrderAndCreatedAtBetween(
+                dto.order(), 
+                dateRange.getInitialDateTime(), 
+                dateRange.getEndDateTime()
+            );
 
             if (exists != null && !exists.getOrder().equals(entity.getOrder())) {
                 throw new ConflictException(
