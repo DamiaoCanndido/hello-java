@@ -7,5 +7,6 @@ public record DocumentItemDTO(
     UUID id, 
     String description, 
     Integer order, 
-    LocalDateTime createdAt
+    LocalDateTime createdAt,
+    String createdBy
 ) { }

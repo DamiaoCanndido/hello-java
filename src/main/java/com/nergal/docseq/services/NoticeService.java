@@ -19,12 +19,12 @@ public class NoticeService extends DocumentService<Notice> {
         super(noticeRepository, userRepository);
     }
 
-    public DocumentDTO listNoticesByTownship(int page, int pageSize, JwtAuthenticationToken token) {
-        return listDocumentsByTownship(page, pageSize, token);
+    public DocumentDTO listNoticesByTownship(int page, int pageSize, JwtAuthenticationToken token, Integer year) {
+        return listDocumentsByTownship(page, pageSize, year, token);
     }
 
-    public void createNotice(DocumentRequestDTO dto, JwtAuthenticationToken token) {
-        createBase(dto, token, Notice::new);
+    public void createNotice(DocumentRequestDTO dto, JwtAuthenticationToken token, Integer year) {
+        createBase(dto, token, year, Notice::new);
     }
 }
 

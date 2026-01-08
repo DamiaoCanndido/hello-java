@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nergal.docseq.controllers.dto.DocumentRequestDTO;
@@ -31,8 +32,8 @@ public class DecreeController {
 
     @PreAuthorize("hasAuthority('SCOPE_DECREE_CREATE')")
     @PostMapping("")
-    public ResponseEntity<Void> createDecree(@Valid @RequestBody DocumentRequestDTO dto, JwtAuthenticationToken token) {
-        decreeService.createDecree(dto, token);
+    public ResponseEntity<Void> createDecree(@Valid @RequestBody DocumentRequestDTO dto, JwtAuthenticationToken token, @RequestParam(required = false) Integer year) {
+        decreeService.createDecree(dto, token, year);
         return ResponseEntity.ok().build();
     }
 

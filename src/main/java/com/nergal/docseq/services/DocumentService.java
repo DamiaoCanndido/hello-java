@@ -37,12 +37,14 @@ public abstract class DocumentService<T extends Document> {
     protected DocumentDTO listDocumentsByTownship(
         int page,
         int pageSize,
+        Integer year,
         JwtAuthenticationToken token) {
 
         var pageable = PageRequest.of(page, pageSize, Sort.Direction.DESC, "order");
         var township_id = userRepository.findById(UUID.fromString(token.getName()))
             .get().getTownship().getTownshipId();
-            var dateRange = new DateRange();
+
+            var dateRange = new DateRange(year);
             var initialDateTime = dateRange.getInitialDateTime();
             var endDateTime = dateRange.getEndDateTime();
             var documents = repository.findByTownship_TownshipIdAndCreatedAtBetweenOrderByOrderDesc(
@@ -58,7 +60,8 @@ public abstract class DocumentService<T extends Document> {
                     doc.getId(),
                     doc.getDescription(),
                     doc.getOrder(),
-                    doc.getCreatedAt()
+                    doc.getCreatedAt(),
+                    doc.getCreatedBy().getUsername()
                 )
             ).toList();
 
@@ -74,9 +77,10 @@ public abstract class DocumentService<T extends Document> {
     protected T createBase(
             DocumentRequestDTO dto,
             JwtAuthenticationToken token,
+            Integer year,
             Supplier<T> factory
     ) {
-        var dateRange = new DateRange();
+        var dateRange = new DateRange(year);
         var user = userRepository.findById(UUID.fromString(token.getName()));
         var documentAlreadyExists = repository.findByOrderAndCreatedAtBetween(
             dto.order(), 
@@ -120,10 +124,10 @@ public abstract class DocumentService<T extends Document> {
         return repository.save(document);
     }
 
-    protected void applyUpdates(T entity, UpdateDocumentDTO dto) {
+    protected void applyUpdates(T entity, UpdateDocumentDTO dto, Integer year) {
 
         if (dto.order() != null) {
-            var dateRange = new DateRange();
+            var dateRange = new DateRange(year);
             var exists = repository.findByOrderAndCreatedAtBetween(
                 dto.order(), 
                 dateRange.getInitialDateTime(), 
@@ -150,7 +154,7 @@ public abstract class DocumentService<T extends Document> {
                     "Document not found"
             ));
 
-        applyUpdates(entity, dto);
+        applyUpdates(entity, dto, entity.getCreatedAt().getYear());
 
         return repository.save(entity);
     }

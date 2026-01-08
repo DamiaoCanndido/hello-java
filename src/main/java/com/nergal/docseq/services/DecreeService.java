@@ -18,7 +18,7 @@ public class DecreeService extends DocumentService<Decree> {
         super(decreeRepository, userRepository);
     }
 
-    public void createDecree(DocumentRequestDTO dto, JwtAuthenticationToken token) {
-        createBase(dto, token, Decree::new);
+    public void createDecree(DocumentRequestDTO dto, JwtAuthenticationToken token, Integer year) {
+        createBase(dto, token, year, Decree::new);
     }
 }

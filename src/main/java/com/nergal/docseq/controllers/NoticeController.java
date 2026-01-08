@@ -37,17 +37,19 @@ public class NoticeController {
     @GetMapping("")
     public ResponseEntity<DocumentDTO> listNoticesByTownship(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int pageSize, 
+        @RequestParam(defaultValue = "10") int pageSize,
+        @RequestParam(required = false) Integer year,
         JwtAuthenticationToken token) {
 
-        var notices = noticeService.listNoticesByTownship(page, pageSize, token);
+        var notices = noticeService.listNoticesByTownship(page, pageSize, token, year);
         return ResponseEntity.ok(notices);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_NOTICE_CREATE')")
     @PostMapping("")
-    public ResponseEntity<Void> createNotice(@Valid @RequestBody DocumentRequestDTO dto, JwtAuthenticationToken token) {
-        noticeService.createNotice(dto, token);
+    public ResponseEntity<Void> createNotice(@Valid @RequestBody DocumentRequestDTO dto,
+        @RequestParam(required = false) Integer year, JwtAuthenticationToken token) {
+        noticeService.createNotice(dto, token, year);
         return ResponseEntity.ok().build();
     }
 

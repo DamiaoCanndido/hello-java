@@ -1,13 +1,24 @@
 package com.nergal.docseq.controllers.helpers;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 
 public class DateRange {
 
-    int year = LocalDateTime.now().getYear();
+    public DateRange(Integer year) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (year == null) {
+            year = now.getYear();
+        }
+
+        this.initialDateTime = LocalDateTime.of(year, Month.JANUARY, 1, 0, 0, 0);
+
+        this.endDateTime = LocalDateTime.of(year, Month.DECEMBER, 31, 23, 59, 59);
+    }
     
-    LocalDateTime initialDateTime = LocalDateTime.of(year, 1, 1, 0, 0, 0);
-    LocalDateTime endDateTime = LocalDateTime.of(year, 12, 31, 23, 59, 59);
+    LocalDateTime initialDateTime;
+    LocalDateTime endDateTime;
 
     public LocalDateTime getInitialDateTime() {
         return initialDateTime;
