@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,13 +15,15 @@ import com.nergal.docseq.entities.Folder;
 public interface FolderRepository extends JpaRepository<Folder, UUID> {
 
     // Search for root folders (initial explorer)
-    List<Folder> findByTownshipTownshipIdAndParentIsNullAndDeletedAtIsNull(
-        UUID townshipId
+    Page<Folder> findByTownshipTownshipIdAndParentIsNullAndDeletedAtIsNull(
+        UUID townshipId,
+        Pageable page
     );
 
     // Search for subfolders within a folder
-    List<Folder> findByParentFolderIdAndDeletedAtIsNull(
-        UUID parentId
+    Page<Folder> findByParentFolderIdAndDeletedAtIsNull(
+        UUID parentId,
+        Pageable page
     );
 
     // Search ALL folders in the organization (full tree)
@@ -28,13 +32,15 @@ public interface FolderRepository extends JpaRepository<Folder, UUID> {
     );
 
     // Find favorite folders
-    List<Folder> findByTownshipTownshipIdAndFavoriteTrueAndDeletedAtIsNull(
-        UUID townshipId
+    Page<Folder> findByTownshipTownshipIdAndFavoriteTrueAndDeletedAtIsNull(
+        UUID townshipId,
+        Pageable page
     );
 
     // Recycle Bin – List deleted folders
-    List<Folder> findByTownshipTownshipIdAndDeletedAtIsNotNull(
-        UUID townshipId
+    Page<Folder> findByTownshipTownshipIdAndDeletedAtIsNotNull(
+        UUID townshipId,
+        Pageable page
     );
 
     // Check for duplicate names in the same folder

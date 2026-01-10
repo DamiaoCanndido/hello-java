@@ -1,9 +1,10 @@
 package com.nergal.docseq.repositories;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,23 +15,27 @@ import com.nergal.docseq.entities.Folder;
 public interface FileRepository extends JpaRepository<File, UUID> {
 
     // List files in a folder
-    List<File> findByFolderFolderIdAndDeletedAtIsNull(
-        UUID folderId
+    Page<File> findByFolderFolderIdAndDeletedAtIsNull(
+        UUID folderId,
+        Pageable page
     );
 
     // List files in the root directory.
-    List<File> findByFolderIsNullAndTownshipTownshipIdAndDeletedAtIsNull(
-        UUID townshipId
+    Page<File> findByFolderIsNullAndTownshipTownshipIdAndDeletedAtIsNull(
+        UUID townshipId,
+        Pageable page
     );
 
     // Search for favorite files
-    List<File> findByTownshipTownshipIdAndFavoriteTrueAndDeletedAtIsNull(
-        UUID townshipId
+    Page<File> findByTownshipTownshipIdAndFavoriteTrueAndDeletedAtIsNull(
+        UUID townshipId,
+        Pageable page
     );
 
     // Recycle Bin – Deleted Files
-    List<File> findByTownshipTownshipIdAndDeletedAtIsNotNull(
-        UUID townshipId
+    Page<File> findByTownshipTownshipIdAndDeletedAtIsNotNull(
+        UUID townshipId,
+        Pageable page
     );
 
     // Search for files securely
