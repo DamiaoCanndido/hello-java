@@ -34,15 +34,15 @@ public class FolderPermissionService {
     }
 
     public void check(
-        UUID userId,
+        UUID ownerUserId,
         UUID folderId,
         FolderPermissionType permission
     ) {
         boolean allowed = repository
             .existsByUserUserIdAndFolderFolderIdAndPermission(
-                    userId,
-                    folderId,
-                    permission
+                ownerUserId,
+                folderId,
+                permission
             );
 
         if (!allowed) {
@@ -55,36 +55,40 @@ public class FolderPermissionService {
 
     @Transactional
     public void grantCascade(
-        UUID userId,
+        UUID ownerUserId,
+        UUID targetUserId,
         UUID folderId,
         FolderPermissionType permission
     ) {
 
-        User user = userRepository.getReferenceById(userId);
         Folder root = folderRepository.findById(folderId)
-            .orElseThrow(() -> new NotFoundException(
-                    "Folder not found"
-            ));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Folder not found"
+                ));
 
-        grantRecursively(user, root, permission);
+        validateOwnership(ownerUserId, root);
+
+        User targetUser = userRepository.getReferenceById(targetUserId);
+
+        grantRecursively(targetUser, root, permission);
     }
 
     private void grantRecursively(
-        User user,
+        User targetUser,
         Folder folder,
         FolderPermissionType permission
     ) {
 
         boolean exists =
             repository.existsByUserUserIdAndFolderFolderIdAndPermission(
-                user.getUserId(),
-                folder.getFolderId(),
-                permission
+                    targetUser.getUserId(),
+                    folder.getFolderId(),
+                    permission
             );
 
         if (!exists) {
             FolderPermission fp = new FolderPermission();
-            fp.setUser(user);
+            fp.setUser(targetUser);
             fp.setFolder(folder);
             fp.setPermission(permission);
 
@@ -93,17 +97,18 @@ public class FolderPermissionService {
 
         List<Folder> children =
             folderRepository.findByParentFolderIdAndDeletedAtIsNull(
-                folder.getFolderId()
-        );
+                    folder.getFolderId()
+            );
 
         for (Folder child : children) {
-            grantRecursively(user, child, permission);
+            grantRecursively(targetUser, child, permission);
         }
     }
 
     @Transactional
     public void revokeCascade(
-        UUID userId,
+        UUID ownerUserId,
+        UUID targetUserId,
         UUID folderId,
         FolderPermissionType permission
     ) {
@@ -113,28 +118,38 @@ public class FolderPermissionService {
                     "Folder not found"
             ));
 
-        revokeRecursively(userId, root, permission);
+        validateOwnership(ownerUserId, root);
+
+        revokeRecursively(targetUserId, root, permission);
     }
 
     private void revokeRecursively(
-        UUID userId,
+        UUID targetUserId,
         Folder folder,
         FolderPermissionType permission
     ) {
 
         repository.deleteByUserUserIdAndFolderFolderIdAndPermission(
-            userId,
+            targetUserId,
             folder.getFolderId(),
             permission
         );
 
         List<Folder> children =
-            folderRepository.findByParentFolderIdAndDeletedAtIsNull(
-                    folder.getFolderId()
-            );
+            folderRepository.
+            findByParentFolderIdAndDeletedAtIsNull(folder.getFolderId());
 
         for (Folder child : children) {
-            revokeRecursively(userId, child, permission);
+            revokeRecursively(targetUserId, child, permission);
+        }
+    }
+
+    private void validateOwnership(UUID ownerUserId, Folder folder) {
+        if (!folder.getCreatedBy().getUserId().equals(ownerUserId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Only the folder owner can manage permissions"
+            );
         }
     }
 }

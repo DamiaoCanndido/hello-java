@@ -34,15 +34,18 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final FileRepository fileRepository;
     private final UserRepository userRepository;
+    private final FolderPermissionService fpService;
 
     public FolderService(
         FolderRepository folderRepository, 
         FileRepository fileRepository,
-        UserRepository userRepository
+        UserRepository userRepository,
+        FolderPermissionService fpService
     ) {
         this.folderRepository = folderRepository;
         this.fileRepository = fileRepository;
         this.userRepository = userRepository;
+        this.fpService = fpService;
     }
 
     // List root folders
