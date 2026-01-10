@@ -1,5 +1,6 @@
 package com.nergal.docseq.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,4 +53,8 @@ public interface FileRepository extends JpaRepository<File, UUID> {
 
     // Search for restore
     Optional<File> findByFileIdAndDeletedAtIsNotNull(UUID fileId);
+
+    List<File> findByFolderAndDeletedAtIsNull(Folder folder);
+
+    List<File> findByFolderFolderIdAndDeletedAtIsNotNull(UUID folderId);
 }

@@ -1,6 +1,8 @@
-package com.nergal.docseq.controllers.dto;
+package com.nergal.docseq.controllers.dto.mappers;
 
 import org.springframework.data.domain.Page;
+
+import com.nergal.docseq.controllers.dto.PageResponse;
 
 public final class PageMapper {
 
