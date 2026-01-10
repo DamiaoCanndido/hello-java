@@ -1,6 +1,6 @@
 package com.nergal.docseq.services;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -212,12 +212,12 @@ public class FolderService {
     @Transactional
     public void softDeleteRecursively(Folder folder, User deletedBy) {
 
-        folder.setDeletedAt(LocalDateTime.now().toInstant(null));
+        folder.setDeletedAt(Instant.now());
         folder.setDeletedBy(deletedBy);
 
         List<File> files = fileRepository.findByFolderAndDeletedAtIsNull(folder);
         for (File file : files) {
-            file.setDeletedAt(LocalDateTime.now().toInstant(null));
+            file.setDeletedAt(Instant.now());
             file.setDeletedBy(deletedBy);
         }
 
@@ -309,7 +309,7 @@ public class FolderService {
                         folderId,
                         user.getTownship().getTownshipId()
                 )
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("folder not found"));
 
         folder.setFavorite(!folder.getFavorite());
     }

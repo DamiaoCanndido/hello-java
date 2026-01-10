@@ -142,6 +142,7 @@ public class FolderController {
 
     /**
      *Restore folder from trash (recursive)
+     !!!OBS: Folders that belong to other folders do not appear in the hierarchy. 
      */
     @PatchMapping("/{folderId}/restore")
     public ResponseEntity<Void> restore(
