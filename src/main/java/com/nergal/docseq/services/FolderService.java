@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.nergal.docseq.controllers.dto.PageResponse;
 import com.nergal.docseq.controllers.dto.folders.CreateFolderRequestDTO;
 import com.nergal.docseq.controllers.dto.folders.FolderContentResponse;
-import com.nergal.docseq.controllers.dto.folders.FolderResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.FolderTreeResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.UpdateFolderRequestDTO;
 import com.nergal.docseq.controllers.dto.mappers.FileMapper;
@@ -288,20 +286,34 @@ public class FolderService {
 
     // List trash can
     @Transactional(readOnly = true)
-    public PageResponse<FolderResponseDTO> listTrash(
+    public FolderContentResponse listTrash(
             Pageable pageable,
             JwtAuthenticationToken token
     ) {
         var townshipId = getTownshipId(token);
 
-        var page = folderRepository
-                .findByTownshipTownshipIdAndDeletedAtIsNotNull(
-                        townshipId,
-                        pageable
-                )
-                .map(FolderMapper::toDTO);
+        var folderPage = folderRepository
+            .findByTownshipTownshipIdAndDeletedAtIsNotNull(
+                townshipId,
+                pageable
+            )
+            .map(FolderMapper::toDTO);
 
-        return PageMapper.toPageResponse(page);
+        var filePage = fileRepository
+            .findByTownshipTownshipIdAndDeletedAtIsNotNull(
+                townshipId,
+                pageable
+            )
+            .map(FileMapper::toResponse);
+
+        return new FolderContentResponse(
+            PageMapper.toPageResponse(
+                    folderPage
+            ),
+            PageMapper.toPageResponse(
+                    filePage
+            )
+        );
     }
 
     // Restore folder with children

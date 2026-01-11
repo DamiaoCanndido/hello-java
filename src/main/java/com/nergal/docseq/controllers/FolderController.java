@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nergal.docseq.controllers.dto.PageResponse;
 import com.nergal.docseq.controllers.dto.folders.CreateFolderRequestDTO;
 import com.nergal.docseq.controllers.dto.folders.FolderContentResponse;
-import com.nergal.docseq.controllers.dto.folders.FolderResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.FolderTreeResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.UpdateFolderRequestDTO;
 import com.nergal.docseq.services.FolderService;
@@ -134,7 +132,7 @@ public class FolderController {
      *List folders in the trash.
      */
     @GetMapping("/trash")
-    public ResponseEntity<PageResponse<FolderResponseDTO>> listTrash(
+    public ResponseEntity<FolderContentResponse> listTrash(
             Pageable pageable,
             JwtAuthenticationToken token
     ) {
