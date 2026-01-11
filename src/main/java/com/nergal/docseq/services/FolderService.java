@@ -22,7 +22,6 @@ import com.nergal.docseq.controllers.dto.mappers.PageMapper;
 import com.nergal.docseq.entities.File;
 import com.nergal.docseq.entities.Folder;
 import com.nergal.docseq.entities.User;
-import com.nergal.docseq.entities.FolderPermission.FolderPermissionType;
 import com.nergal.docseq.exception.ConflictException;
 import com.nergal.docseq.exception.NotFoundException;
 import com.nergal.docseq.repositories.FileRepository;
@@ -35,18 +34,15 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final FileRepository fileRepository;
     private final UserRepository userRepository;
-    private final FolderPermissionService fpService;
 
     public FolderService(
         FolderRepository folderRepository, 
         FileRepository fileRepository,
-        UserRepository userRepository,
-        FolderPermissionService fpService
+        UserRepository userRepository
     ) {
         this.folderRepository = folderRepository;
         this.fileRepository = fileRepository;
         this.userRepository = userRepository;
-        this.fpService = fpService;
     }
 
     // List root folders
@@ -75,9 +71,6 @@ public class FolderService {
             JwtAuthenticationToken token
     ) {
         var township_id = getTownshipId(token);
-        User user = getUser(token);
-
-        fpService.check(user.getUserId(), parentId, FolderPermissionType.READ);
 
         folderRepository.findByFolderIdAndTownshipTownshipIdAndDeletedAtIsNull(
                 parentId, township_id)
@@ -107,7 +100,7 @@ public class FolderService {
     @Transactional
     public void create(CreateFolderRequestDTO dto, JwtAuthenticationToken token) {
         var user = getUser(token);
-
+        
         Folder parent = null;
         if (dto.parentId() != null) {
             parent = folderRepository.findByFolderIdAndTownshipTownshipIdAndDeletedAtIsNull(
