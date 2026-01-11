@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nergal.docseq.controllers.dto.PageResponse;
 import com.nergal.docseq.controllers.dto.folders.CreateFolderRequestDTO;
+import com.nergal.docseq.controllers.dto.folders.FolderContentResponse;
 import com.nergal.docseq.controllers.dto.folders.FolderResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.FolderTreeResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.UpdateFolderRequestDTO;
@@ -63,7 +64,7 @@ public class FolderController {
      *List root folders (not deleted)
      */
     @GetMapping("/root")
-    public ResponseEntity<PageResponse<FolderResponseDTO>> listRoot(
+    public ResponseEntity<FolderContentResponse> listRoot(
             Pageable pageable,
             JwtAuthenticationToken token
     ) {
@@ -74,7 +75,7 @@ public class FolderController {
      *List subfolders of a folder
      */
     @GetMapping("/{folderId}/children")
-    public ResponseEntity<PageResponse<FolderResponseDTO>> listChildren(
+    public ResponseEntity<FolderContentResponse> listChildren(
             @PathVariable UUID folderId,
             Pageable pageable,
             JwtAuthenticationToken token

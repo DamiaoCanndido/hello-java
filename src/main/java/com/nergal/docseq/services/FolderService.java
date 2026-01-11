@@ -13,9 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.nergal.docseq.controllers.dto.PageResponse;
 import com.nergal.docseq.controllers.dto.folders.CreateFolderRequestDTO;
+import com.nergal.docseq.controllers.dto.folders.FolderContentResponse;
 import com.nergal.docseq.controllers.dto.folders.FolderResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.FolderTreeResponseDTO;
 import com.nergal.docseq.controllers.dto.folders.UpdateFolderRequestDTO;
+import com.nergal.docseq.controllers.dto.mappers.FileMapper;
 import com.nergal.docseq.controllers.dto.mappers.FolderMapper;
 import com.nergal.docseq.controllers.dto.mappers.FolderTreeBuilder;
 import com.nergal.docseq.controllers.dto.mappers.PageMapper;
@@ -47,40 +49,66 @@ public class FolderService {
 
     // List root folders
     @Transactional(readOnly = true)
-    public PageResponse<FolderResponseDTO> listRootFolders(
+    public FolderContentResponse listRootFolders(
             Pageable pageable,
             JwtAuthenticationToken token
     ) {
         var township_id = getTownshipId(token);
 
-        var page = folderRepository
-                .findByTownshipTownshipIdAndParentIsNullAndDeletedAtIsNull(
-                        township_id,
-                        pageable
-                )
-                .map(FolderMapper::toDTO);
+        var folderPage = folderRepository
+            .findByTownshipTownshipIdAndParentIsNullAndDeletedAtIsNull(
+                    township_id,
+                    pageable
+            )
+            .map(FolderMapper::toDTO);
 
-        return PageMapper.toPageResponse(page);
+        var filePage = fileRepository
+            .findByFolderFolderIdAndDeletedAtIsNull(
+                null, 
+                pageable
+            ).map(FileMapper::toResponse);
+
+        return new FolderContentResponse(
+            PageMapper.toPageResponse(
+                    folderPage
+            ),
+            PageMapper.toPageResponse(
+                    filePage
+            )
+        );
     }
 
     // List subfolders
     @Transactional(readOnly = true)
-    public PageResponse<FolderResponseDTO> listChildren(
+    public FolderContentResponse listChildren(
             UUID parentId,
             Pageable pageable,
             JwtAuthenticationToken token
     ) {
         var township_id = getTownshipId(token);
 
-        folderRepository.findByFolderIdAndTownshipTownshipIdAndDeletedAtIsNull(
+        var folder = folderRepository.findByFolderIdAndTownshipTownshipIdAndDeletedAtIsNull(
                 parentId, township_id)
                 .orElseThrow(() -> new NotFoundException("folder not found"));
 
-        var page = folderRepository
+        var folderPage = folderRepository
                 .findByParentFolderIdAndDeletedAtIsNull(parentId, pageable)
                 .map(FolderMapper::toDTO);
 
-        return PageMapper.toPageResponse(page);
+        var filePage = fileRepository
+            .findByFolderFolderIdAndDeletedAtIsNull(
+                folder.getFolderId(), 
+                pageable
+            ).map(FileMapper::toResponse);
+
+        return new FolderContentResponse(
+            PageMapper.toPageResponse(
+                    folderPage
+            ),
+            PageMapper.toPageResponse(
+                    filePage
+            )
+        );
     }
 
     // Complete tree
