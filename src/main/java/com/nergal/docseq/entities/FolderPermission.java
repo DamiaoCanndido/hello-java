@@ -2,14 +2,14 @@ package com.nergal.docseq.entities;
 
 import java.util.UUID;
 
-import org.springframework.data.annotation.Id;
-
 import jakarta.persistence.*;
 
 @Entity
 @Table(
-  uniqueConstraints = @UniqueConstraint(
-    columnNames = {"user_id", "folder_id"}
+    name = "tb_folder_permissions",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_user_folder_permission",
+        columnNames = {"user_id", "folder_id", "permission"}
   )
 )
 public class FolderPermission {
@@ -19,9 +19,11 @@ public class FolderPermission {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
     private Folder folder;
 
     @Enumerated(EnumType.STRING)

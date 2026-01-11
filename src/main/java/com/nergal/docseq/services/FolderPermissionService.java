@@ -12,6 +12,7 @@ import com.nergal.docseq.entities.Folder;
 import com.nergal.docseq.entities.FolderPermission;
 import com.nergal.docseq.entities.FolderPermission.FolderPermissionType;
 import com.nergal.docseq.entities.User;
+import com.nergal.docseq.exception.ForbiddenException;
 import com.nergal.docseq.exception.NotFoundException;
 import com.nergal.docseq.repositories.FolderPermissionRepository;
 import com.nergal.docseq.repositories.FolderRepository;
@@ -46,9 +47,8 @@ public class FolderPermissionService {
             );
 
         if (!allowed) {
-            throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN,
-                "Permission denied"
+            throw new ForbiddenException(
+                "No permission " + permission.name()
             );
         }
     }

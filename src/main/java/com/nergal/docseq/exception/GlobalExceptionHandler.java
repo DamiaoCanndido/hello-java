@@ -34,6 +34,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    // 403 Forbidden
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, String>> handleForbidden(ForbiddenException ex) {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(new HashMap<>() {{
+                put("error", ex.getMessage());
+            }});
+    }
+
     // 404 Not Found
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFound(NotFoundException ex) {
@@ -64,7 +74,7 @@ public class GlobalExceptionHandler {
             }});
     }
 
-    // 422 Unprocessable Content
+    // 400 Bad Request
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Map<String, String>> handleBadRequest(BadRequestException ex) {
         return ResponseEntity

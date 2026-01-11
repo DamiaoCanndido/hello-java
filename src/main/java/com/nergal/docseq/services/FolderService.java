@@ -22,6 +22,7 @@ import com.nergal.docseq.controllers.dto.mappers.PageMapper;
 import com.nergal.docseq.entities.File;
 import com.nergal.docseq.entities.Folder;
 import com.nergal.docseq.entities.User;
+import com.nergal.docseq.entities.FolderPermission.FolderPermissionType;
 import com.nergal.docseq.exception.ConflictException;
 import com.nergal.docseq.exception.NotFoundException;
 import com.nergal.docseq.repositories.FileRepository;
@@ -74,6 +75,9 @@ public class FolderService {
             JwtAuthenticationToken token
     ) {
         var township_id = getTownshipId(token);
+        User user = getUser(token);
+
+        fpService.check(user.getUserId(), parentId, FolderPermissionType.READ);
 
         folderRepository.findByFolderIdAndTownshipTownshipIdAndDeletedAtIsNull(
                 parentId, township_id)
