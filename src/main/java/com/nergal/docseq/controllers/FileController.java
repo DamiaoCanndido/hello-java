@@ -1,7 +1,11 @@
 package com.nergal.docseq.controllers;
 
 import com.nergal.docseq.controllers.dto.files.FileResponseDTO;
+import com.nergal.docseq.controllers.dto.files.FileStream;
 import com.nergal.docseq.services.FileService;
+
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -76,12 +80,19 @@ public class FileController {
 
     
     @GetMapping("/{fileId}/view-url")
-    public ResponseEntity<String> generateViewUrl(
+    public ResponseEntity<Resource> generateViewUrl(
             @PathVariable UUID fileId,
             JwtAuthenticationToken token
     ) {
-        String url = fileService.generateViewUrl(fileId);
-        return ResponseEntity.ok(url);
+        FileStream stream = fileService.streamFile(fileId, token);
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(stream.contentType()))
+            .header(
+                HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=\"" + stream.filename() + "\""
+            )
+            .body(stream.resource());
     }
 }
 

@@ -1,6 +1,8 @@
 package com.nergal.docseq.services;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,9 +23,14 @@ public class LocalStorageService implements StorageService {
     public String upload(MultipartFile file, UUID fileId) {
         try {
             Files.createDirectories(ROOT);
+
+            String objectKey = "uploads/" + fileId + ".pdf";
+
             Path target = ROOT.resolve(fileId + ".pdf");
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-            return target.toString();
+
+            return objectKey;
+
         } catch (IOException e) {
             throw new RuntimeException("File upload failed", e);
         }
@@ -38,6 +45,6 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public String generateTemporaryUrl(String storageKey) {
-        return "http://localhost:9090/files/view?path=" + storageKey;
+        return "http://localhost:9090/files/view?path=" + URLEncoder.encode(storageKey, StandardCharsets.UTF_8);
     }
 }
